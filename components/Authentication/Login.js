@@ -52,7 +52,10 @@ class Login extends Component {
     var navigation = this.props.navigation;
     navigation.navigate('Registration')
   }
-
+  onPressGuest() {
+    var navigation = this.props.navigation;
+    navigation.navigate('Home')
+  }
 
   renderCurrentState() {
     if(this.state.authenticating) {
@@ -80,6 +83,7 @@ class Login extends Component {
         />
         <Button  style={styles.button} onPress={() => this.onPressSignIn()}><Text style={styles.text}>Log In</Text></Button>
         <Button  style={styles.button} onPress={() => this.onPressRegister()}><Text style={styles.text}>Register</Text></Button>
+        <Button  style={styles.button} onPress={() => this.onPressGuest()}><Text style={styles.text}>Continue as Guest</Text></Button>
         {/* <Button  style={styles.button} onPress={() => this.onPressRegister()}><Text style={styles.text}>Forgot Password</Text></Button> */}
       </View>
     )
