@@ -50,7 +50,7 @@ class Login extends Component {
   }
   onPressRegister() {
     var navigation = this.props.navigation;
-    navigation.navigate('Registration')
+    navigation.navigate('Register Option')
   }
   onPressGuest() {
     var navigation = this.props.navigation;

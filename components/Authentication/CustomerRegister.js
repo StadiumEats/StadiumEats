@@ -3,11 +3,15 @@ import { ActivityIndicator, StyleSheet, Text, View, Alert } from 'react-native';
 import * as firebase from 'firebase';
 import {TextInput, Button} from 'native-base'
 import {Input} from '../Input'
+import 'firebase/firestore'
 
 
-class Register extends Component {
+
+class CustomerRegister extends Component {
 
   state = {
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -28,17 +32,35 @@ class Register extends Component {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
+    this.ref = firebase.firestore().collection('User')
+
   }
   onPressRegister() {
     if (this.state.password != this.state.confirmPassword) {
       Alert.alert("Passwords do not match!");
       return;
     }
+    if(!this.state.firstName || !this.state.lastName) {
+      Alert.alert("First and last name must be filled out!");
+      return;
+    }
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        Alert.alert("Registered Successfully");
-        var navigation = this.props.navigation;
-        navigation.navigate('Login')
+        console.log('1')
+        this.ref.add({
+          FirstName: this.state.firstName,
+          LastName: this.state.lastName,
+          UserType: 'Customer',
+          email: this.state.email
+        }).then((data) => {
+          console.log("added customer")
+
+          Alert.alert("Registered Successfully");
+          var navigation = this.props.navigation;
+          navigation.navigate('Login')
+        }).catch((error) => {
+          console.log(error)
+        })
 
       }, (error) => {
         Alert.alert(error.message)
@@ -54,6 +76,18 @@ class Register extends Component {
         return (
           <View style={styles.container}>
             <View style={styles.form}>
+                <Input 
+                  placeholder='Enter your First Name'
+                  label='First Name'
+                  onChangeText={ firstName => this.setState({firstName}) }
+                  value={this.state.firstName}
+                />
+                <Input 
+                  placeholder='Enter your Last Name'
+                  label='Last Name'
+                  onChangeText={ lastName => this.setState({lastName}) }
+                  value={this.state.lastName}
+                />
                 <Input 
                   placeholder='Enter your email'
                   label='Email'
@@ -124,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register
+export default CustomerRegister
