@@ -87,6 +87,16 @@ class Login extends Component {
         {/* <Button  style={styles.button} onPress={() => this.onPressRegister()}><Text style={styles.text}>Forgot Password</Text></Button> */}
       </View>
     )
+    // foodList() {
+    //   var foods = this.props.route.params.state
+    //   var foodList;
+    //   for(food in foods)
+    //     foodList += <View>{food.name}</View>
+    //   return(
+    //     foodList
+    //   )
+    // }
+    // call this method in the render method
 
 
   }
@@ -95,6 +105,7 @@ class Login extends Component {
     return (
       <View style={styles.container}>
         {this.renderCurrentState()}
+        {/* {this.foodList()} */}
       </View>
     );
   }
