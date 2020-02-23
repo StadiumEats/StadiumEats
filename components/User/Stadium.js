@@ -16,7 +16,6 @@ class Stadium extends Component {
     }
 
     componentDidMount() {
-      var state = this.props.route.params.state
       this.unsubscribe = this.ref.onSnapshot((querySnapshot) => {
         const stadiums = [];
         querySnapshot.forEach((doc) => {
