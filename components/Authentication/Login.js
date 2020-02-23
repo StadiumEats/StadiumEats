@@ -54,7 +54,7 @@ class Login extends Component {
   }
   onPressGuest() {
     var navigation = this.props.navigation;
-    navigation.navigate('Home')
+    navigation.navigate('Stadium Options', {state: this.state})
   }
 
   renderCurrentState() {

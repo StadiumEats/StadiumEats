@@ -8,7 +8,8 @@ import Login from './components/Authentication/Login'
 import CustomerRegister from './components/Authentication/CustomerRegister'
 import EmployeeRegister from './components/Authentication/EmployeeRegister'
 import RegisterOption from './components/Authentication/RegisterOption'
-import Home from './components/Home'
+import Stadium from './components/User/Stadium'
+import Concession from './components/User/Concession'
 
 
 const Stack = createStackNavigator();
@@ -16,6 +17,15 @@ const Stack = createStackNavigator();
 
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      stadium: null,
+      concession: null,
+      userType: null,
+    }
+  }
+
   
   render() {
     return (
@@ -24,7 +34,7 @@ class App extends Component {
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{title: 'Login'}}
+            options={{title: 'Welcome'}}
           />
           <Stack.Screen 
             name="Customer Registration" 
@@ -39,8 +49,13 @@ class App extends Component {
             component={RegisterOption} 
           />
           <Stack.Screen 
-            name="Home" 
-            component={Home} 
+            name="Stadium Options" 
+            component={Stadium} 
+            options={{title: 'Choose The Stadium'}}
+          />
+          <Stack.Screen 
+            name="Concession Options" 
+            component={Concession} 
           />
         </Stack.Navigator>
       </NavigationContainer>
