@@ -43,7 +43,7 @@ class Login extends Component {
       .then(() => {
         this.setState({authenticating: false})
         var navigation = this.props.navigation;
-        navigation.navigate('Stadium Options')
+        navigation.navigate('Stadium Options', {state: this.state})
       }, (error) => {
         Alert.alert(error.message)
       })
