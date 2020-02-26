@@ -22,7 +22,9 @@ class Concession extends Component {
       this.setState({stadium}, function() {this.getConcessions()})
 
     }
-
+    generateCart() {
+      
+    }
     getConcessions() {
         var id = this.state.stadium.id
         this.ref.doc(id).collection('Concessions').get()
@@ -65,6 +67,7 @@ class Concession extends Component {
 
     concession(e, concession) {
         console.log(concession)
+        Alert.alert(concession.ConcessionName + " Added.");
     }
 
 
@@ -74,6 +77,14 @@ class Concession extends Component {
           <View style={styles.container}>
             <View style={styles.form}>
                 {this.populateConcessions()}
+          <View style = {styles.form}>
+                <Button
+                title="Cart"
+                style={styles.button}
+          color="red"
+          onPress={() => Alert.alert('1 Hotdog \n 1 Terrapin Beer \n 1 Popcorn')}
+        />
+        </View>
             </View>
           </View>
         )
