@@ -10,7 +10,8 @@ class Concession extends Component {
       super(props);
       this.state = {
         stadium: null,
-        concessions: []
+        concessions: [],
+        cart:[]
       }
       const db = firebase.firestore()
       this.ref = db.collection('Stadiums')
@@ -32,6 +33,7 @@ class Concession extends Component {
                     var concession = doc.data()
                     concessions.push( {
                         ConcessionName: concession.ConcessionName,
+                        price: concession.price,
                         id: id
                     })
                 })
@@ -50,6 +52,7 @@ class Concession extends Component {
                 style={styles.button} 
                 onPress={(e) => this.concession(e, concession)}>
                 <Text style={styles.text}>{concession.ConcessionName}</Text>
+                <Text style={styles.text}>{concession.price}</Text>
             </Button>
           ));
 
