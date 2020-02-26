@@ -83,7 +83,9 @@ class Concession extends Component {
                 style={styles.button}
           color="red"
           onPress={() => Alert.alert('1 Hotdog \n 1 Terrapin Beer \n 1 Popcorn')}
-        />
+              > 
+                            <Text style={styles.text}>Cart</Text>
+              </Button>
         </View>
             </View>
           </View>
