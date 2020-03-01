@@ -10,7 +10,8 @@ class Concession extends Component {
       super(props);
       this.state = {
         stadium: null,
-        concessions: []
+        concessions: [],
+        cart:[]
       }
       const db = firebase.firestore()
       this.ref = db.collection('Stadiums')
@@ -21,7 +22,9 @@ class Concession extends Component {
       this.setState({stadium}, function() {this.getConcessions()})
 
     }
-
+    generateCart() {
+      
+    }
     getConcessions() {
         var id = this.state.stadium.id
         this.ref.doc(id).collection('Concessions').get()
@@ -32,6 +35,7 @@ class Concession extends Component {
                     var concession = doc.data()
                     concessions.push( {
                         ConcessionName: concession.ConcessionName,
+                        price: concession.price,
                         id: id
                     })
                 })
@@ -50,6 +54,7 @@ class Concession extends Component {
                 style={styles.button} 
                 onPress={(e) => this.concession(e, concession)}>
                 <Text style={styles.text}>{concession.ConcessionName}</Text>
+                <Text style={styles.text}>{concession.price}</Text>
             </Button>
           ));
 
@@ -62,6 +67,7 @@ class Concession extends Component {
 
     concession(e, concession) {
         console.log(concession)
+        Alert.alert(concession.ConcessionName + " Added.");
     }
 
 
@@ -71,6 +77,16 @@ class Concession extends Component {
           <View style={styles.container}>
             <View style={styles.form}>
                 {this.populateConcessions()}
+          <View style = {styles.form}>
+                <Button
+                title="Cart"
+                style={styles.button}
+          color="red"
+          onPress={() => Alert.alert('1 Hotdog \n 1 Terrapin Beer \n 1 Popcorn')}
+              > 
+                            <Text style={styles.text}>Cart</Text>
+              </Button>
+        </View>
             </View>
           </View>
         )
