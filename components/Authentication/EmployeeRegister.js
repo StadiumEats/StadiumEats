@@ -4,19 +4,31 @@ import * as firebase from 'firebase';
 import {TextInput, Button} from 'native-base'
 import {Input} from '../Input'
 import 'firebase/firestore'
+import RNPickerSelect from 'react-native-picker-select';
+
 
 
 
 class EmployeeRegister extends Component {
 
-  state = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    storeName: '',
-    approved: false,
+  constructor(props) {
+    super(props);
+    this.state = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      storeName: '',
+      stadium: '',
+      concession: '',
+      approved: false,
+      stadiumList: [],
+      concessions: [],
+      prevStadium: '',
+    }
+    
+    
   }
   
 
@@ -34,7 +46,6 @@ class EmployeeRegister extends Component {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    this.ref = firebase.firestore().collection('User')
 
   }
   onPressRegister() {
@@ -46,14 +57,19 @@ class EmployeeRegister extends Component {
       Alert.alert("First and last name must be filled out!");
       return;
     }
+    if(!this.state.stadium || !this.state.concession) {
+      Alert.alert("You must choose the specific stadium and concession!");
+      return;
+    }
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        console.log('1')
-        this.ref.add({
+        firebase.firestore().collection('User').doc(this.state.email).set({
           FirstName: this.state.firstName,
           LastName: this.state.lastName,
           UserType: 'Employee',
-          email: this.state.email
+          email: this.state.email,
+          stadium: this.state.stadium,
+          concession: this.state.concession,
         }).then((data) => {
           console.log("added employee")
 
@@ -72,8 +88,72 @@ class EmployeeRegister extends Component {
 
 
     componentDidMount() {
+      this.getStadiums()
+    }
+
+    getStadiums() {
+      const db = firebase.firestore()
+      this.ref = db.collection('Stadiums')
+      this.unsubscribe = this.ref.onSnapshot((querySnapshot) => {
+        const stadiums = [];
+        querySnapshot.forEach((doc) => {
+          var id = doc.id
+          var stadium = doc.data()
+          stadiums.push( {
+            label: stadium.TeamName + '-' + stadium.StadiumName,
+            value: id,
+          })
+        })
+        this.setState({stadiumList: stadiums})
+      })
+    }
+  
+    getConcessions() {
+      if(this.state.stadium) {
+        if(this.state.stadium !== this.state.prevStadium) {
+          this.setState({prevStadium: this.state.stadium})
+          var id = this.state.stadium
+          this.ref.doc(id).collection('Concessions').get()
+              .then(response => {
+                  const concessions = []
+                  response.forEach(doc => {
+                      var id = doc.id
+                      var concession = doc.data()
+                      concessions.push( {
+                          label: concession.ConcessionName,
+                          value: id
+                      })
+                  })
+                  this.setState({concessions}, function() {this.con()})
+              })
+              .catch(error => {
+                  console.log(error);
+              });
+        }
+        
+        return(
+          <View>
+            <View>
+              <Text style={styles.dropDownText}>Stadium Name</Text>
+              <View style={styles.dropDownContainer}>
+                <RNPickerSelect
+                    onValueChange={(value) => this.setState({concession: value})}
+                    items={this.state.concessions}
+                />
+              </View>
+            </View>
+          </View>
+        )
+      }
+      return(
+        <View></View>
+      )
 
     }
+    con() {
+      console.log(this.state.concessions)
+    }
+
     render() {
         return (
           <View style={styles.container}>
@@ -110,16 +190,21 @@ class EmployeeRegister extends Component {
                   onChangeText={ confirmPassword => this.setState({confirmPassword}) }
                   value={this.state.confirmPassword}
                 />
-                <Input 
-                  placeholder='Will probably have a dropdown list instead'
-                  label='Store Name'
-                  secureTextEntry
-                  onChangeText={ storeName => this.setState({storeName}) }
-                  value={this.state.storeName}
-                />
+                <View style={styles.dropDownStadium}>
+                  <Text style={styles.dropDownText}>Stadium Name</Text>
+                  <View style={styles.dropDownContainer}>
+                    <RNPickerSelect
+                        onValueChange={(value) => this.setState({stadium: value})}
+                        items={this.state.stadiumList}
+                    />
+                  </View>
+                </View>
+                <View style={styles.dropDown}>
+                  {this.getConcessions()}
+                </View>
+                
                 <Button  style={styles.button} onPress={() => this.onPressRegister()}><Text style={styles.text}>Register</Text></Button>
             </View>
-            <View style={styles.bottom}><Text style={styles.text}>Check</Text></View>
           </View>
         )
     }
@@ -150,6 +235,18 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 30,
   },
+  dropDownText: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    fontWeight: '500',
+    fontSize: 20,
+  },
+  dropDownStadium: {
+    marginTop: 20,
+  },
   button: {
     marginTop: 10,
     padding: 20,
@@ -164,6 +261,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 'auto',
     marginLeft: 'auto'
+  },
+  dropDownContainer: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30,
   },
 });
 
