@@ -13,6 +13,11 @@ class Login extends Component {
     password: '',
     authenticating: false,
     isAuthenticated: false,
+    stadium: '',
+    concession: '',
+    userType: '',
+    FirstName: '',
+    LastName: '',
 
   }
   
@@ -42,11 +47,33 @@ class Login extends Component {
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
         this.setState({authenticating: false})
-        var navigation = this.props.navigation;
-        navigation.navigate('Stadium Options', {state: this.state})
+        this.findUser()
       }, (error) => {
         Alert.alert(error.message)
+        this.setState({authenticating: false})
       })
+  }
+  findUser() {
+    this.ref = firebase.firestore().collection('User')
+    this.ref.doc(this.state.email).get()
+        .then(response => {
+            var user = response.data()
+            this.setState({userType: user.UserType})
+            this.setState({stadium: user.stadium})
+            this.setState({concession: user.concession})
+            this.setState({FirstName: user.FirstName})
+            this.setState({LastName: user.LastName})
+            if(this.state.userType === '' || this.state.userType === 'Customer') {
+                var navigation = this.props.navigation;
+                navigation.navigate('Stadium Options', {state: this.state})
+            } else if(this.state.userType === 'Employee') {
+                var navigation = this.props.navigation;
+                navigation.navigate('Employee Concession', {state: this.state})
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
   }
   onPressRegister() {
     var navigation = this.props.navigation;

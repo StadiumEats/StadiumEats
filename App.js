@@ -10,6 +10,7 @@ import EmployeeRegister from './components/Authentication/EmployeeRegister'
 import RegisterOption from './components/Authentication/RegisterOption'
 import Stadium from './components/User/Stadium'
 import Concession from './components/User/Concession'
+import EmployeeConcession from './components/Employee/EmployeeConcession'
 
 
 const Stack = createStackNavigator();
@@ -56,6 +57,11 @@ class App extends Component {
           <Stack.Screen 
             name="Concession Options" 
             component={Concession} 
+          />
+          <Stack.Screen 
+            name="Employee Concession" 
+            options={{title: 'Orders'}}
+            component={EmployeeConcession} 
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -61,10 +61,9 @@ class EmployeeRegister extends Component {
       Alert.alert("You must choose the specific stadium and concession!");
       return;
     }
-    this.ref = firebase.firestore().collection('User')
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        this.ref.add({
+        firebase.firestore().collection('User').doc(this.state.email).set({
           FirstName: this.state.firstName,
           LastName: this.state.lastName,
           UserType: 'Employee',
