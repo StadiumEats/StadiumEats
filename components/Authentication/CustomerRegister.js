@@ -46,7 +46,6 @@ class CustomerRegister extends Component {
     }
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
-        console.log('1')
         this.ref.add({
           FirstName: this.state.firstName,
           LastName: this.state.lastName,

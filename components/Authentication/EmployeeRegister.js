@@ -46,7 +46,6 @@ class EmployeeRegister extends Component {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    this.ref = firebase.firestore().collection('User')
 
   }
   onPressRegister() {
@@ -58,13 +57,20 @@ class EmployeeRegister extends Component {
       Alert.alert("First and last name must be filled out!");
       return;
     }
+    if(!this.state.stadium || !this.state.concession) {
+      Alert.alert("You must choose the specific stadium and concession!");
+      return;
+    }
+    this.ref = firebase.firestore().collection('User')
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(() => {
         this.ref.add({
           FirstName: this.state.firstName,
           LastName: this.state.lastName,
           UserType: 'Employee',
-          email: this.state.email
+          email: this.state.email,
+          stadium: this.state.stadium,
+          concession: this.state.concession,
         }).then((data) => {
           console.log("added employee")
 
