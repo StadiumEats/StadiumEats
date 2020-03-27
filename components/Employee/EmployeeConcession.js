@@ -12,6 +12,7 @@ class EmployeeConcession extends Component {
         stadium: null,
         concession: null,
         ConcessionName: null,
+        currentOrders: null,
       }
       const db = firebase.firestore()
       this.ref = db.collection('User')
@@ -21,34 +22,140 @@ class EmployeeConcession extends Component {
         this.setState({stadium: this.props.route.params.state.stadium},
             function() {
                 this.setState({concession: this.props.route.params.state.concession},
-                    function() {this.findConcession()})
+                    //function () { this.findConcession() }, function () { this.findOrders() })
+                    function () { this.findConcession() })
             })
-        
+
     }
     findConcession() {
       var stadiumID = this.state.stadium
       var concessionID = this.state.concession
       this.ref = firebase.firestore().collection('Stadiums')
       this.ref.doc(stadiumID).collection('Concessions').doc(concessionID).get()
-        .then(response => {
-            this.setState({ConcessionName: response.data().ConcessionName})
-        })
-        .catch(error => {
-            console.log(error);
-        });
+            .then(response => {
+                this.setState({ConcessionName: response.data().ConcessionName})
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+
+        this.ref.doc(stadiumID).collection('Concessions').doc(concessionID).collection('Orders').get()
+            .then(response => {
+                const orders = []
+                response.forEach(doc => {
+                    var id = doc.id
+                    var currOrder = doc.data()
+                    //console.log("Order is")
+                    //console.log(currOrder)
+                    orders.push( {
+                        Order: currOrder.Order
+                    })
+                })
+                //console.log(orders)
+                this.setState({currentOrders: orders})
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
+    }
+
+    findOrders() {
+        console.log("Starting find Orders")
+        var stadiumID = this.state.stadium
+        var concessionID = this.state.concession
+        this.ref = firebase.firestore().collection('Stadiums')
+        this.ref.doc(stadiumID).collection('Concessions').doc(concessionID).collection('Orders').get()
+            .then(response => {
+                const orders = []
+                response.forEach(doc => {
+                    var id = doc.id
+                    var currOrder = doc.data()
+                    //console.log("Order is")
+                    //console.log(currOrder)
+                    orders.push( {
+                        Order: currOrder.Order
+                    })
+                })
+                //console.log(orders)
+                this.setState({currentOrders: orders})
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        console.log("Finished")
+        //console.log(this.state.currentOrders)
     }
 
     getOrders() {
-        if(this.state.ConcessionName) {
+        console.log("curr orders in getOrders(), ", this.state.currentOrders)
+
+        if (this.state.currentOrders != null) {
+            console.log("entering loop")
+            const orders = this.state.currentOrders.map(orderDisplay => (
+                <Button
+                    key={orderDisplay.id}
+                    style={styles.button}
+                    onPress={(e) => this.orderButton(e, orderDisplay)}>
+                    <Text style={styles.text}>{orderDisplay.Order.Location}</Text>
+                </Button>
+            ));
+
+            console.log(orders)
+
             return (
-                <Text>Orders for {this.state.ConcessionName}</Text>
+
+                <View>
+                    <Text style={styles.text2}>Orders for {this.state.ConcessionName}</Text>
+                    {orders}
+                </View>
+
             )
+
         }
-        return (
-            <View></View>
-        )
+        // const orders = this.state.currentOrders.map(orderDisplay => (
+        //     <Button
+        //         key={orderDisplay.id}
+        //         style={styles.button}
+        //         onPress={(e) => this.orderDisplay(e, orderDisplay)}>
+        //         <Text style={styles.text}>{orderDisplay}</Text>
+        //     </Button>
+        // ));
+
+        // if(this.state.ConcessionName) {
+        //     return (
+        //         //<Text>Orders for {this.state.ConcessionName}</Text>
+        //         <View> {orders} </View>
+        //     )
+        // }
+        // return (
+        //     <View></View>
+        // )
     }
-    
+
+    orderButton(e, orderDisplay) {
+        console.log("pressed")
+        Alert.alert(
+            "Order Details: Order " + orderDisplay.Order.OrderNum,
+            "\nOrder Number: " + orderDisplay.Order.OrderNum +
+            "\nDelivery: " + orderDisplay.Order.Delivery +
+            "\nLocation: " + orderDisplay.Order.Location +
+            "\nOrder: " + orderDisplay.Order.ConcessionOrder,
+            [
+                {text: 'Back'},
+                {text: 'Delete'},
+            ]
+            );
+    }
+
+
+    test() {
+        console.log(this.state.currentOrders)
+        const orderList = this.state.currentOrders
+
+        return <Text> Test </Text>
+    }
 
 
 
@@ -104,6 +211,15 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     marginLeft: 'auto'
   },
+  text2: {
+      color: 'dodgerblue',
+      fontWeight: '700',
+      fontSize: 20,
+      marginRight: 'auto',
+      marginLeft: 'auto',
+      marginBottom: 20,
+  },
+
 });
 
 export default EmployeeConcession
